@@ -1,0 +1,22 @@
+{
+	"nfs_server":"192.168.1.19",
+	"nfs_remote_folder":"/var/nfs",
+	"bioexcel": [{
+		"application_name": "PyMDSetup",
+		"image_source_url": "https://www.dropbox.com/s/uxgcm4rkm554d28/PyMDSetup-v2.qcow2?dl=1"
+	},{
+		"application_name": "Chromatin Dynamics",
+		"image_source_url": "https://www.dropbox.com/s/w8e09wqs92l0g9r/ChromatineDynamicsNAflex_ON.qcow2?dl=1"
+	}],
+	"nfsclient": [{
+		"application_name": "NAFlex",
+		"image_source_url": "http://mmb.irbbarcelona.org/NAFlex/"
+	},{
+		"application_name": "PyMDSetup",
+		"image_source_url": "http://mmb.irbbarcelona.org/~andrio/PyMDSetup-v2.qcow2"
+	},{
+		"application_name": "Chromatin Dynamics",
+		"image_source_url": "http://inb.bsc.es/MuGimages/ChromatineDynamicsNAflex_ON.qcow2"
+	}]
+}
+

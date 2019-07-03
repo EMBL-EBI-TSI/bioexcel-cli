@@ -1,0 +1,13 @@
+{
+	"tools" : [
+	{
+	 "tool_name":"PyMDSetup",
+	 "launcher":"bioexcel"
+	},
+	{
+	 "tool_name":"Chromatin Dynamics Jun06 guestfish",
+	 "launcher":"ecpimage"
+	}
+	]
+}
+

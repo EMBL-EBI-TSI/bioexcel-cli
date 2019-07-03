@@ -1,0 +1,9 @@
+{
+  "applicationName": "NFS-Client",
+  "applicationAccountUsername"  : "usr-36d0f1c6-527d-4408-ae6d-7c425a022087",
+  "attachedVolumes": [],
+  "assignedInputs": [],
+  "assignedParameters": [],
+  "configurationName": "NFS client BioExcel PyMD-mug",
+  "configurationAccountUsername": "usr-36d0f1c6-527d-4408-ae6d-7c425a022087"
+}
