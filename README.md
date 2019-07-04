@@ -4,9 +4,10 @@ Define user credentials on `json/user.json`, If you want to use a token from a d
 stick it in a file and use the `--token` flag to pass it. 
 
 ## Requirement 
+python 3.6
 Install ecp-cli module from github repository.
 
-pip install git+https://github.com/EMBL-EBI-TSI/ecp-cli/
+pip3 install git+https://github.com/EMBL-EBI-TSI/ecp-cli/
 
 
 ## Synopsis
