@@ -44,23 +44,3 @@ Deploy tools from the `json/deploy.json` file and use token.txt for session.
 Destroy deployments defined in `json/destroy.json` file and use token.txt for session.
 
 `bioexcel –token=token.txt destroy`
-
-## Side notes for Mac OS X
-
-The `python3` is required. Installed it with:
-
-`brew install python3`
-
-if needed.  
-
-It is a good idea to keep the default version unchanged.
-
-Modules `requests` and `yaml` are not installed by default. Run:
-
-`sudo pip3 install requests`
-
-and
-
-`sudo pip3 install pyyaml`
-
-as necessary.
