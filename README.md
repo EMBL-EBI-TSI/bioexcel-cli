@@ -1,5 +1,5 @@
-# Bioexcel portal app command line tool
-An Bioexcel portal app command line tool, make executable and stick it in your `PATH`.
+# Bioexcel portal client - e2e testing tool
+An Bioexcel portal client command line tool for end to end testing.Make executable and stick it in your `PATH`.
 Define user credentials on `json/user.json`, If you want to use a token from a different source,
 stick it in a file and use the `--token` flag to pass it. 
 
@@ -24,13 +24,15 @@ Actions are:
 
 ## Configurations
 
-`json/user.json` :  User credentials
+`json/user.json` :  Contains User credential & number of sessions
 
-`json/config.json` :  NFS server details, application name and corresponding image source URL to deploy through launcher.
+`json/config.json` :  Contains NFS server details, application name and corresponding image source URL to deploy through launcher.
 
-`json/deploy.json` :  Launcher application with tool name defined on the config.json
+`json/deploy.json` :  Contains launcher application with tool to be installed/uploaded on cloud
+                      launcher : bioexcel, nfsclient, ecpimage
+                      tool_name : see application_name in config.json
 
-`json/destroy.json`: Deployment references to destroy.
+`json/destroy.json`: Contains deployment references to be destroyed.
 
 ## Examples
 Deploy tools from the `json/deploy.json` file.

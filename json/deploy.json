@@ -1,12 +1,8 @@
 {
 	"tools" : [
 	{
-	 "tool_name":"PyMDSetup",
+	 "tool_name":"COMPSs",
 	 "launcher":"bioexcel"
-	},
-	{
-	 "tool_name":"Chromatin Dynamics Jun06 guestfish",
-	 "launcher":"ecpimage"
 	}
 	]
 }

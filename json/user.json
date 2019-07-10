@@ -1,9 +1,8 @@
 {
-	"users" : [
-	{
+	"user-sessions":5,
+	"user" : {
 	 "username":"xaviera",
 	 "password":"june@123"
 	}
-	]
 }
 
