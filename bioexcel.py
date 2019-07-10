@@ -144,7 +144,6 @@ class BIEXCEL:
             print("Deployment process started. Reference :- ", reference)
             print("Deployment logs : ")
             logexLen = 0
-            count = 0
             while True:
                 logs = ecpCli.make_request('get', 'logs', reference, '')
                 logText = (logs.text).rstrip('\r\n')
@@ -154,18 +153,17 @@ class BIEXCEL:
                     print("----Request ID {0} ; log for reference {1} ".format(reqID, reference))
                     print(logText1)
                 logexLen = logTextLen
-                count += 1
                 if('external_ip' in logText):
                     done = time.time()
                     elapsed = done - start
-                    print("Deployment ["+reference+"] started Running!")
-                    self.deploymentStatus[reference] = "RUNNING   :{:5.2f}".format(elapsed)
+                    print("Request ID {0} Deployment [{1}] started Running!".format(reqID, reference))
+                    self.deploymentStatus[reqID] = "{0} : RUNNING   :{1:5.4f}".format(reference, elapsed)
                     break
                 elif('error(s) occurred' in logText):
                     done = time.time()
                     elapsed = done - start
-                    print("Deployment [" + reference + "] starting failed!")
-                    self.deploymentStatus[reference] = "FAILED    :{:5.2f}".format(elapsed)
+                    print("Request ID {0} ; Deployment [{1}] starting failed!".format(reqID, reference))
+                    self.deploymentStatus[reqID] = "{0} : FAILED    :{1:5.4f}".format(reference, elapsed)
                     break
                 else:
                     time.sleep(5)
@@ -211,6 +209,7 @@ class BIEXCEL:
             self.getToolsConfig()
             self.getDeployConfig()
             self.getLauncherData()
+            threads = list()
             for i in range(self.sessions):
                 ecpCli = ecp.ECP()
                 if args.token == '':
@@ -219,11 +218,16 @@ class BIEXCEL:
                     ecpCli.get_token(args.token)
                 self.checkSharedConfig(ecpCli)
                 x = threading.Thread(target=self.deploy, args=(ecpCli, i), daemon=True)
+                threads.append(x)
                 x.start()
-            x.join()
-            print(" Results : ")
-            print("   REFERENCE     STATUS      ELAPSED")
-            print(yaml.safe_dump(self.deploymentStatus, indent=2, default_flow_style=False))
+            threadcount = 0
+            for index, thread in enumerate(threads):
+                thread.join()
+                threadcount += 1
+                if threadcount == self.sessions:
+                    print(" Results : ")
+                    print("No    REFERENCE     STATUS      ELAPSED")
+                    print(yaml.safe_dump(self.deploymentStatus, indent=2, default_flow_style=False))
         elif args.action == 'destroy':
             ecpCli = ecp.ECP()
             if args.token == '':
