@@ -1,10 +1,14 @@
 # Bioexcel portal client - e2e testing tool
 An Bioexcel portal client command line tool for end to end testing.Make executable and stick it in your `PATH`.
-Define user credentials on `json/user.json`, If you want to use a token from a different source,
-stick it in a file and use the `--token` flag to pass it. 
+Define user credentials and number of sessions on `json/user.json`, If you want to use a token from a different source,
+stick it in a file and use the `--token` flag to pass it.Generate session token for owner of `BioExcel Embassy` team and
+paste it to `token/owner.txt`
 
 ## Requirement 
 python 3.6
+
+pip3 install PyJWT
+
 Install ecp-cli module from github repository.
 
 pip3 install git+https://github.com/EMBL-EBI-TSI/ecp-cli/
@@ -34,10 +38,15 @@ Actions are:
 
 `json/destroy.json`: Contains deployment references to be destroyed.
 
+
 ## Examples
 Deploy tools from the `json/deploy.json` file.
 
 `bioexcel deploy`
+
+Destroy deployment reference defined in `json/destroy.json` file.
+
+`bioexcel destroy`
 
 Deploy tools from the `json/deploy.json` file and use token.txt for session.
 
