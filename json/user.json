@@ -1,8 +1,7 @@
 {
-	"user-sessions":5,
-	"user" : {
-	 "username":"",
-	 "password":""
-	}
+	"user-sessions":1,
+	"users" : [{
+	 "username":"bioexcel1",
+	 "password":"bioexcel123"
+	}]
 }
-

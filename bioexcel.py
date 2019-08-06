@@ -12,7 +12,7 @@ import jwt
 
 
 class BIEXCEL:
-    user = {}
+    users = []
     sessions = None
     bioexceltools = {}
     nfsclienttools = {}
@@ -26,6 +26,7 @@ class BIEXCEL:
 
     def __init__(self):
         self.nfsserver = ""
+        self.nfsremotedir = "/var/nfs"
         self.sessions = 1
         self.ownertoken = "token/owner.txt"
 
@@ -40,37 +41,27 @@ class BIEXCEL:
     def check_shared_config(self, ecpcli):
         print("Checking shared configuration..")
         bioexcelconfig = False
-        nfsconfig = False
         res = ecpcli.make_request('get', 'sharedconfig', '')
         resp = res.json()
         if '_embedded' in resp:
             for config in resp['_embedded']['configurationResourceList']:
                 if config['name'] == "NFS client BioExcel chrmdn-mug":
                     bioexcelconfig = True
-                if config['name'] == "NFS server CRUK":
-                    nfsconfig = True
-        if bioexcelconfig & nfsconfig:
+        if bioexcelconfig:
             print("Configurations shared with user.")
             return True
         else:
             print("Configuration not shared with user.")
-            if not bioexcelconfig:
-                ecpowner = ecp.ECP()
-                ecpowner.get_token(self.ownertoken)
-                email = self.get_email(ecpcli)
-                bioexcelconfig = self.join_team("BioExcel Embassy", email, ecpowner)
-            if not nfsconfig:
-                ecpowner = ecp.ECP()
-                ecpowner.get_token(self.ownertoken)
-                email = self.get_email(ecpcli)
-                nfsconfig = self.join_team("NFS Server", email, ecpowner)
-
-        if bioexcelconfig & nfsconfig:
-            print("Adding to team success !!")
-            return True
-        else:
-            print("Adding to team failed !!")
-            sys.exit(0)
+            ecpowner = ecp.ECP()
+            ecpowner.get_token(self.ownertoken)
+            email = self.get_email(ecpcli)
+            bioexcelconfig = self.join_team("BioExcel Embassy", email, ecpowner)
+            if bioexcelconfig:
+                print("Adding to team success !!")
+                return True
+            else:
+                print("Adding to team failed !!")
+                sys.exit(0)
 
     def get_email(self, ecpcli):
         token = ecpcli.get_session_token()
@@ -87,13 +78,13 @@ class BIEXCEL:
         else:
             return False
 
-    def get_user(self):
+    def get_users(self):
         datafh = open('json/user.json', 'r')
         data = datafh.read()
         datafh.close()
         userjson = json.loads(data)
         self.sessions = int(userjson['user-sessions'])
-        self.user = userjson['user']
+        self.users = userjson['users']
 
     def get_tools_config(self):
         datafh = open('json/config.json', 'r')
@@ -101,6 +92,7 @@ class BIEXCEL:
         datafh.close()
         jsondata = json.loads(data)
         self.nfsserver = jsondata['nfs_server']
+        self.nfsremotedir = jsondata['nfs_remote_folder']
         bioexcel = jsondata['bioexcel']
         for apps in bioexcel:
             self.bioexceltools[apps['application_name'] + "-url"] = apps['image_source_url']
@@ -149,9 +141,10 @@ class BIEXCEL:
                       {"inputName": "image_disk_type", "assignedValue": "BioExcel_Embassy_VM"}]
             jsonData["configurationName"] = self.bioexceltools.get(toolname + "-config")
         elif launcher == 'nfsclient':
-            inputs = [{"inputName": "nfs_server_host", "assignedValue": self.nfsServer},
+            inputs = [{"inputName": "nfs_server_host", "assignedValue": self.nfsserver},
+                      {"inputName": "remote_folder", "assignedValue": self.nfsremotedir},
                       {"inputName": "application_name", "assignedValue": toolname}]
-            jsonData["configurationName"] = self.nfsClienttools.get(toolname + "-config")
+            jsonData["configurationName"] = self.nfsclienttools.get(toolname + "-config")
         else:
             inputs = [{"inputName": "disk_image_name", "assignedValue": toolname}]
         jsondumps = json.dumps(inputs)
@@ -172,6 +165,7 @@ class BIEXCEL:
                 reference = res['reference']
             except:
                 print("Exception while creating deployment!")
+                print("Response from server : ", res)
                 return "NONE|CREATION_FAILED"
             print("Deployment process {0} started. Reference :- {1}".format(reqid, reference))
             print("Deployment logs : ")
@@ -236,25 +230,34 @@ class BIEXCEL:
         parser.add_argument('--token',
                             help='File containing JWT identity token, is sourced from ECP_TOKEN env var by default')
         args = parser.parse_args()
-        self.get_user()
+        self.get_users()
         if args.action == 'deploy':
             self.get_tools_config()
             self.get_deploy_config()
             self.get_launcher_data()
-            ecpcli = ecp.ECP()
             if args.token is None:
-                self.login(self.user['username'], self.user['password'], ecpcli)
+                threads = list()
+                usercount = 0
+                for user in self.users:
+                    ecpcli = ecp.ECP()
+                    usercount += 1
+                    self.login(user['username'], user['password'], ecpcli)
+                    self.check_shared_config(ecpcli)
+                    x = threading.Thread(target=self.deploy, args=(ecpcli, usercount), daemon=True)
+                    threads.append(x)
+                    x.start()
             else:
+                ecpcli = ecp.ECP()
                 ecpcli.get_token(args.token)
-            self.check_shared_config(ecpcli)
-            sessiontoken = ecpcli.get_session_token()
-            threads = list()
-            for i in range(self.sessions):
-                ecpclisession = ecp.ECP()
-                ecpclisession.set_token(sessiontoken)
-                x = threading.Thread(target=self.deploy, args=(ecpclisession, i), daemon=True)
-                threads.append(x)
-                x.start()
+                self.check_shared_config(ecpcli)
+                sessiontoken = ecpcli.get_session_token()
+                threads = list()
+                for i in range(self.sessions):
+                    ecpclisession = ecp.ECP()
+                    ecpclisession.set_token(sessiontoken)
+                    x = threading.Thread(target=self.deploy, args=(ecpclisession, i), daemon=True)
+                    threads.append(x)
+                    x.start()
             threadcount = 0
             for index, thread in enumerate(threads):
                 thread.join()
@@ -265,8 +268,8 @@ class BIEXCEL:
                     print(yaml.safe_dump(self.deploymentstatus, indent=2, default_flow_style=False))
         elif args.action == 'destroy':
             ecpcli = ecp.ECP()
-            if args.token == '':
-                self.login(self.user['username'], self.user['password'], ecpcli)
+            if args.token is None:
+                self.login(self.users[0]['username'], self.users[0]['password'], ecpcli)
             else:
                 ecpcli.get_token(args.token)
             self.get_destroy_config()

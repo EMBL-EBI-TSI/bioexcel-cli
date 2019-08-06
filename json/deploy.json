@@ -3,6 +3,10 @@
 	{
 	 "tool_name":"COMPSs",
 	 "launcher":"bioexcel"
+	},
+	{
+	 "tool_name":"BioExcel_Ippoliti_nofree_06_02_2018",
+	 "launcher":"ecpimage"
 	}
 	]
 }
