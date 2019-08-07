@@ -1,57 +1,68 @@
 # Bioexcel portal client - e2e testing tool
-An Bioexcel portal client command line tool for end to end testing.Make executable and stick it in your `PATH`.
-Define user credentials and number of sessions on `json/user.json`, If you want to use a token from a different source,
-stick it in a file and use the `--token` flag to pass it.Generate session token for owner of `BioExcel Embassy` team and
-paste it to `token/owner.txt`
+A Bioexcel portal client command line tool for end to end testing.
+Define user credentials and number of sessions in `user.json`.If you want to use token directly ,paste token to a file and pass
+argument `--token` pointing to relative path.Generate session token for owner of `BioExcel Embassy` team and
+copy to a file pass it with argument `--owner`,  or it will look for `owner.txt` in current directory.
+It will look up `json` directory in current directory by default or you can pass `config json` directory with `--json` argument.
 
 ## Requirement 
 python 3.6
 
-pip3 install PyJWT
+ecp-cli module
 
-Install ecp-cli module from github repository.
+install from github: 
 
 pip3 install git+https://github.com/EMBL-EBI-TSI/ecp-cli/
 
+## Install
+pip3 install git+https://github.com/EMBL-EBI-TSI/bioexcel-cli/
 
 ## Synopsis
-Main commands are run as 
+Main commands can be run as 
 
-`bioexcel *argument* [*action*]`. 
+`bioexcel-cli *argument* [*action*]`. 
 
 Actions are: 
  - deploy
  - destroy
 
- argument: 
-  --token: file name relative path
+argument: 
+  
+  --token: session token file relative path
+  
+  --json: folder containing all configuration json. 
+  
+  --owner: `BioExcel Embassy` team owner's account session token file path  
 
 ## Configurations
+By default all json will be looked under `json` directory in current directory.
 
-`json/user.json` :  Contains User credential & number of sessions
+`user.json` :  Contains list of user credentials & number of sessions
 
-`json/config.json` :  Contains NFS server details, application name and corresponding image source URL to deploy through launcher.
+`config.json` :  Contains NFS server details, application name and corresponding image source URL to deploy through launcher.
 
-`json/deploy.json` :  Contains launcher application with tool to be installed/uploaded on cloud
+`deploy.json` :  Contains launcher application with tool to be installed/uploaded on cloud.
+                      
                       launcher : bioexcel, nfsclient, ecpimage
+                      
                       tool_name : see application_name in config.json
 
-`json/destroy.json`: Contains deployment references to be destroyed.
+`destroy.json`: Contains deployment references to be destroyed.
 
 
 ## Examples
-Deploy tools from the `json/deploy.json` file.
+Deploy tools from the `deploy.json` file, create sessions from `user.json`.
 
-`bioexcel deploy`
+`bioexcel-cli deploy`
 
-Destroy deployment reference defined in `json/destroy.json` file.
+Destroy deployment reference defined in `destroy.json`, create session from `user.json` file.
 
-`bioexcel destroy`
+`bioexcel-cli destroy`
 
-Deploy tools from the `json/deploy.json` file and use token.txt for session.
+Deploy tools from the `deploy.json` file and use token.txt for session.
 
-`bioexcel –token=token.txt deploy`
+`bioexcel-cli –-token token.txt deploy`
 
-Destroy deployments defined in `json/destroy.json` file and use token.txt for session.
+Destroy deployments defined in `destroy.json` file, locate json from given path.
 
-`bioexcel –token=token.txt destroy`
+`bioexcel-cli –-json config-dir destroy`
