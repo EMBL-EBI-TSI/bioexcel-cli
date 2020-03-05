@@ -1,13 +1,10 @@
 {
-	"tools" : [
-	{
-	 "tool_name":"COMPSs",
-	 "launcher":"bioexcel"
-	},
-	{
-	 "tool_name":"BioExcel_Ippoliti_nofree_06_02_2018",
-	 "launcher":"ecpimage"
-	}
-	]
-}
-
+			"deployments": [
+			{
+			 "application_name":"PyMDSetup",
+			 "launcher":"bioexcel",
+			 "config_name":"",
+			 "team_name":""
+			}
+			]
+		}

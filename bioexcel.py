@@ -31,6 +31,7 @@ class BIEXCEL:
         self.sessions = 1
         self.ownertoken = "owner.txt"
         self.jsondir = "json/"
+        self.inputjson = self.jsondir+"config/input.json";
 
     def login(self, username, password, ecpcli):
         login = ecpcli.login(username, password)
@@ -47,7 +48,7 @@ class BIEXCEL:
         resp = res.json()
         if '_embedded' in resp:
             for config in resp['_embedded']['configurationResourceList']:
-                if config['name'] == "NFS client BioExcel chrmdn-mug":
+                if config['name'] == "BioExcel CPMD license on Embassy Cloud":
                     bioexcelconfig = True
         if bioexcelconfig:
             print("Configurations shared with user.")
@@ -89,7 +90,7 @@ class BIEXCEL:
         self.users = userjson['users']
 
     def get_tools_config(self):
-        datafh = open(self.jsondir+'config.json', 'r')
+        datafh = open(self.inputjson, 'r')
         data = datafh.read()
         datafh.close()
         jsondata = json.loads(data)
@@ -121,12 +122,18 @@ class BIEXCEL:
         datafh.close()
         self.launcher['ecpimage'] = json.loads(data)
 
+        file = self.jsondir + 'launcher/ecpapplication.json'
+        datafh = open(file, 'r')
+        data = datafh.read()
+        datafh.close()
+        self.launcher['ecpapplication'] = json.loads(data)
+
     def get_deploy_config(self):
         datafh = open(self.jsondir+'deploy.json', 'r')
         data = datafh.read()
         datafh.close()
         jsondata = json.loads(data)
-        self.deployConf = jsondata['tools']
+        self.deployConf = jsondata['deployments']
 
     def get_destroy_config(self):
         datafh = open(self.jsondir+'destroy.json', 'r')
@@ -135,20 +142,32 @@ class BIEXCEL:
         jsondata = json.loads(data)
         self.deployments = jsondata['deployments']
 
-    def get_json_data(self, launcher, toolname):
+    def get_json_data(self, launcher, toolname, configname):
         jsonData = self.launcher[launcher]
         if launcher == 'bioexcel':
             inputs = [{"inputName": "application_name", "assignedValue": toolname},
                       {"inputName": "image_source_url", "assignedValue": self.bioexceltools.get(toolname + "-url")},
                       {"inputName": "image_disk_type", "assignedValue": "BioExcel_Embassy_VM"}]
-            jsonData["configurationName"] = self.bioexceltools.get(toolname + "-config")
+            if configname == '':
+                jsonData["configurationName"] = self.bioexceltools.get(toolname + "-config")
+            else:
+                jsonData["configurationName"] = configname
         elif launcher == 'nfsclient':
             inputs = [{"inputName": "nfs_server_host", "assignedValue": self.nfsserver},
                       {"inputName": "remote_folder", "assignedValue": self.nfsremotedir},
                       {"inputName": "application_name", "assignedValue": toolname}]
-            jsonData["configurationName"] = self.nfsclienttools.get(toolname + "-config")
+            if configname == '':
+                jsonData["configurationName"] = self.nfsclienttools.get(toolname + "-config")
+            else:
+                jsonData["configurationName"] = configname
+        elif launcher == 'ecpimage':
+            inputs = [{"inputName": "application_name", "assignedValue": toolname}]
+            jsonData["configurationName"] = configname
         else:
-            inputs = [{"inputName": "disk_image_name", "assignedValue": toolname}]
+            jsonData["applicationName"] = toolname
+            jsonData["configurationName"] = configname
+            inputs = []
+
         jsondumps = json.dumps(inputs)
         inputjson = json.loads(jsondumps)
         jsonData["assignedInputs"] = inputjson
@@ -156,17 +175,23 @@ class BIEXCEL:
 
     def deploy(self, ecpcli, reqid):
         for dep in self.deployConf:
-            toolname = dep['tool_name']
+            toolname = dep['application_name']
             launcher = dep['launcher']
-            data = self.get_json_data(launcher, toolname)
-            # print(yaml.safe_dump(data, indent=2, default_flow_style=False))
-            response = ecpcli.make_request('create', 'deployment', '', data)
+            configname = dep['config_name']
+            teamname = dep['team_name']
+            data = self.get_json_data(launcher, toolname, configname)
+            print(yaml.safe_dump(data, indent=2, default_flow_style=False))
+            if launcher == 'ecpapplication':
+                response = ecpcli.make_request('create', 'deployment?teamName', teamname, data)
+            else:
+                response = ecpcli.make_request('create', 'deployment', '', data)
             start = time.time()
             res = response.json()
             try:
                 reference = res['reference']
             except:
                 print("Exception while creating deployment!")
+                print("Response status : ", response.status_code)
                 print("Response from server : ", res)
                 return "NONE|CREATION_FAILED"
             print("Deployment process {0} started. Reference :- {1}".format(reqid, reference))

@@ -1,8 +1,8 @@
-{
-	"deployments" : [
-	{
-	 "reference":"TSI1562686832172"
-	}
-	]
-}
-
+{"deployments":[
+  {"reference":"TSI1583409312943"},
+  {"reference":"TSI1583409721767"},
+  {"reference":"TSI1583409721809"},
+  {"reference":"TSI1583409721807"},
+  {"reference":"TSI1583409721790"},
+  {"reference":"TSI1583409721830"}
+]}
