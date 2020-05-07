@@ -1,6 +1,6 @@
 # Bioexcel portal client - e2e testing tool
 Bioexcel portal client is a command line tool for end to end testing of Bioexcel portal. 
-The objective is to test performance of Bioexcel portal backend which is actually EBI cloud portal API server.
+The objective is to test performance of Bioexcel portal backend, which is actually EBI cloud portal API server.
 The testing is focused on Cloud Portal's deployment with multiple concurrent user sessions 
 and destruction process.
 
@@ -18,13 +18,20 @@ pip3 install git+https://github.com/EMBL-EBI-TSI/bioexcel-cli/
 
 ## Synopsis
 
-`json` Directory contains necessary json files for running of Bioexcel portal client.
+The CLI tries to simulate the behaviour and configuration of the BioExcel Cloud Portal. There are some configurations in the project that reflect hardcoded information in the BioExcel Portal itself and configuration that is stored in `bio.tools` and used by the portal as additional source of information. This CLI talks only to the ECP API and does not use any information stored in `bio.tools`.
 
-`deploy.json` Describes What & how many applications should be deployed through which launcher.
-              We have four type of launchers for Bioexcel portal's deployment of an application.
-				
-				bioexcel, nfsclient, ecpimage, ecpapplication
+The documentation below uses the term `launcher`. Launchers correspond to 4 types of applications available in BioExcel Portal:
+* `bioexcel` - application uploading and launching an image. Requires a link with the image to run and a configuration. Application type is hardcoded. Default URLs and configurations are defined in [the config](json/config/input.json). If you want to use a different than default configuration, it can be provided as a part of [the deployment descriptor](json/deploy.json)  
+* `nfsclient` - application installing an NFS Client on top of image configured as a part of the configuration. Requires the configuration and inputs with NFS Server location. Default values for both are defined in [the config](json/config/input.json).  Application type is hardcoded. The configuration can be changed as a part of [the deployment descriptor](json/deploy.json)
+* `ecpimage` - application just running an instance of an image defined as a part of configuration. Defaults are not provided, as currently `bio.tools` have no entries of that type. You can provide your own configuration as a part of  [the deployment descriptor](json/deploy.json)
+* `ecpapplication` - application that is not hardcoded and needs: application name, configuration name and team name, where both are shared. There are applications of that type in the current portal, but the default config at the moment does not have that type of applications and you have to provide all details via  [the deployment descriptor](json/deploy.json)
 
+[`json`](json) Directory contains necessary json files for running of Bioexcel portal client.
+
+[`config\input.json`](config\input.json) stores information that in the real BioExcel Portal comes from bio.tools (this at the moment is done only for applications of the 2 types used in BioExcel 1). You need to change this file, if your NFS server is exposed under a different IP than the default and when you want to upload an image from a different URL. All other changes can be done via `deploy.json` 
+
+[`deploy.json`](deploy.json) Describes which & how many applications should be deployed through which launcher.
+             
 JSON structure:
   
 			    {   "deployments" : [{   
@@ -34,19 +41,19 @@ JSON structure:
 					"team_name":"Bioexcel"
 			    }]}
 								 
-application - biotools application to be deployed
+* `application` - biotools application to be deployed. For `bioexcel`, `nfsclient` and `ecpimage` only creates metadata (does not matter that much). For `ecpapplication` must be a name of a real ECP application.
 
-launcher - one of the four launchers
+* `launcher` - one of the four launchers
   
-config_name - configuration to be used for deployment
+* `config_name` - configuration to be used for deployment. If empty the dafault will be used, if exists in `config/input.json`.
   
-team_name - team in which application is shared
+* `team_name` - team in which application is shared. Relevan only for `ecpapplication`.
   
-we can provide n number of deployment object inside deployments array block. 
+We can provide n number of deployment object inside deployments array block. 
 Deployment will be done one by one.
 
 
-`destroy.json` Describe what are all the deployments to be destroyed.
+[`destroy.json`](destroy.json) Describe what are all the deployments to be destroyed.
       	      
 JSON structure:
 
@@ -54,11 +61,11 @@ JSON structure:
 			  {"reference":"TSI1583323328233"}
 			  ]}
 		  
-reference - deployment reference to be destroyed
+* `reference` - deployment reference to be destroyed
 		
-we can provide n number of reference object inside deployments array block.
+We can provide n number of reference object inside deployments array block.
 
-`user.json` Describes user accounts to be used and number concurrent sessions to be created 
+[`user.json`](user.json) Describes user accounts to be used and number concurrent sessions to be created 
 while doing deployment.There are two ways that user sessions can be created. 
 One is from given JWT token. The other way is through HTTP login from credentials specified on user.json.
 You can give JWT token by arugument.`--token` #JWT token saved file path relative#.
@@ -75,37 +82,16 @@ JSON structure:
 				}
 			  }
 			  
-user-sessions - number of concurrent user sessions to be created from the account of JWT token specified.
+* `user-sessions` - number of concurrent user sessions to be created from the account of JWT token specified.
                 this attributed will be ignored if --token argument is not specified.
 						  
-username - username for session creation through HTTP login 
+* `username` - username for session creation through HTTP login 
 
-password - password for session creation through HTTP login
+* `password` - password for session creation through HTTP login
 
 You can specify n number of user objects inside users array. 
 This type of session creation will happen only if --token is not specified.	  
 			  
-
-#### Possible application and launcher mappings to use with `deploy.json`
-        
-		Application name       		Launcher
-		  PyMDSetup 			bioexcel
-		  Chromatin Dynamics		bioexcel
-		  COMPSs			bioexcel
-		  NAFlex			nfsclient
-		  PyMDSetup			nfsclient
-		  Chromatin Dynamics		nfsclient
-		  CWL VM environment		ecpapplication
-		  Jupyter Server Instance 	ecpapplication
-		  
-For `bioexcel` and `nfsclient` launcher `team_name` is not required. `config_name` 
-is used if specified.It will use default value if `config_name` is not specified.
- 
-For `ecpimage` launcher `team_name` is not required. `application_name` and `config_name` 
-are mandatorily specified on deploy.json
-  
-For config_name application_name, config_name and team_name are mandatory and must be specified 
-in deploy.json.
 
 ## Usage
 		  
