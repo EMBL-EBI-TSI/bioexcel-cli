@@ -1,9 +1,12 @@
 {
-  "applicationName": "",
-  "applicationAccountUsername"  : null,
-  "attachedVolumes": [],
-  "assignedInputs": [],
-  "assignedParameters": [],
-  "configurationName": "",
-  "configurationAccountUsername": null
+  "deployments": [
+    {
+      "application_name":"CWL VM environment",
+      "launcher":"ecpapplication",
+      "config_name":"os61",
+      "team_name":"BioExcelCliTest",
+      "configurationAccountUsername": "usr-ee13a6ea-5c09-430f-963f-e653f0005141",
+      "applicationAccountUsername": "usr-ee13a6ea-5c09-430f-963f-e653f0005141"
+    }
+  ]
 }

@@ -1,10 +1,49 @@
 {
-			"deployments": [
-			{
-			 "application_name":"PyMDSetup",
-			 "launcher":"bioexcel",
-			 "config_name":"",
-			 "team_name":""
-			}
-			]
-		}
+  "deployments": [
+    {
+      "application_name": "CWL VM environment" ,
+      "launcher": "ecpapplication" ,
+      "config_name": "os61" ,
+      "team_name": "BioExcelCliTest" ,
+      "attachedVolumes": [ ] ,
+      "assignedInputs": [ ] ,
+      "assignedParameters": [
+        {
+          "parameterName": "disk_image_name" ,
+          "parameterValue": ""
+        } ,
+        {
+          "parameterName": "remote_user" ,
+          "parameterValue": ""
+        } ,
+        {
+          "parameterName": "machine_type" ,
+          "parameterValue": ""
+        } ,
+        {
+          "parameterName": "local_folder" ,
+          "parameterValue": ""
+        } ,
+        {
+          "parameterName": "floating_ip_pool" ,
+          "parameterValue": "os61 : ext-net-37"
+        } ,
+        {
+          "parameterName": "network_name" ,
+          "parameterValue": "os61 : CRUK_private_2_ext-net-37"
+        } ,
+        {
+          "parameterName": "nfs_install" ,
+          "parameterValue": ""
+        } ,
+        {
+          "parameterName": "workflow_url" ,
+          "parameterValue": ""
+        }
+      ] ,
+      "configurationName": "os61" ,
+      "configurationAccountUsername": "usr-ee13a6ea-5c09-430f-963f-e653f0005141",
+      "applicationAccountUsername": "usr-ee13a6ea-5c09-430f-963f-e653f0005141"
+    }
+  ]
+}

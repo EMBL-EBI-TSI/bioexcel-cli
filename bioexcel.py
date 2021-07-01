@@ -9,6 +9,7 @@ import json
 import threading
 import yaml
 import jwt
+import urllib3
 
 
 class BIEXCEL:
@@ -31,7 +32,7 @@ class BIEXCEL:
         self.sessions = 1
         self.ownertoken = "owner.txt"
         self.jsondir = "json/"
-        self.inputjson = self.jsondir+"config/input.json";
+        self.inputjson = self.jsondir + "config/input.json";
 
     def login(self, username, password, ecpcli):
         login = ecpcli.login(username, password)
@@ -48,7 +49,7 @@ class BIEXCEL:
         resp = res.json()
         if '_embedded' in resp:
             for config in resp['_embedded']['configurationResourceList']:
-                if config['name'] == "BioExcel CPMD license on Embassy Cloud":
+                if config['name'] == "os61":
                     bioexcelconfig = True
         if bioexcelconfig:
             print("Configurations shared with user.")
@@ -58,7 +59,7 @@ class BIEXCEL:
             ecpowner = ecp.ECP()
             ecpowner.get_token(self.ownertoken)
             email = self.get_email(ecpcli)
-            bioexcelconfig = self.join_team("BioExcel Embassy", email, ecpowner)
+            bioexcelconfig = self.join_team("BioExcelCliTest", email, ecpowner)
             if bioexcelconfig:
                 print("Adding to team success !!")
                 return True
@@ -82,7 +83,7 @@ class BIEXCEL:
             return False
 
     def get_users(self):
-        datafh = open(self.jsondir+'user.json', 'r')
+        datafh = open(self.jsondir + 'user.json', 'r')
         data = datafh.read()
         datafh.close()
         userjson = json.loads(data)
@@ -106,17 +107,17 @@ class BIEXCEL:
             self.nfsclienttools[apps['application_name'] + "-config"] = apps['configuration_name']
 
     def get_launcher_data(self):
-        file = self.jsondir+'launcher/bioexcel.json'
+        file = self.jsondir + 'launcher/bioexcel.json'
         datafh = open(file, 'r')
         data = datafh.read()
         self.launcher['bioexcel'] = json.loads(data)
 
-        file = self.jsondir+'launcher/nfsclient.json'
+        file = self.jsondir + 'launcher/nfsclient.json'
         datafh = open(file, 'r')
         data = datafh.read()
         self.launcher['nfsclient'] = json.loads(data)
 
-        file = self.jsondir+'launcher/ecpimage.json'
+        file = self.jsondir + 'launcher/ecpimage.json'
         datafh = open(file, 'r')
         data = datafh.read()
         datafh.close()
@@ -129,14 +130,14 @@ class BIEXCEL:
         self.launcher['ecpapplication'] = json.loads(data)
 
     def get_deploy_config(self):
-        datafh = open(self.jsondir+'deploy.json', 'r')
+        datafh = open(self.jsondir + 'deploy.json', 'r')
         data = datafh.read()
         datafh.close()
         jsondata = json.loads(data)
         self.deployConf = jsondata['deployments']
 
     def get_destroy_config(self):
-        datafh = open(self.jsondir+'destroy.json', 'r')
+        datafh = open(self.jsondir + 'destroy.json', 'r')
         data = datafh.read()
         datafh.close()
         jsondata = json.loads(data)
@@ -182,7 +183,7 @@ class BIEXCEL:
             data = self.get_json_data(launcher, toolname, configname)
             print(yaml.safe_dump(data, indent=2, default_flow_style=False))
             if launcher == 'ecpapplication':
-                response = ecpcli.make_request('create', 'deployment?teamName', teamname, data)
+                response = ecpcli.make_request('create', 'deployment?teamname', teamname, data)
             else:
                 response = ecpcli.make_request('create', 'deployment', '', data)
             start = time.time()
@@ -256,14 +257,14 @@ class BIEXCEL:
         parser.add_argument('action', help='Action to perform : deploy/destroy')
         parser.add_argument('--token', help='File contains JWT identity token, Optional.')
         parser.add_argument('--json', help='directory contains all config jsons, Optional, '
-                                               'it will look up "json" folder in current directory by default.')
+                                           'it will look up "json" folder in current directory by default.')
         parser.add_argument('--owner', help='File contains "BioExcel Embassy" team owner account JWT ,'
-                                                'it will look up "owner.txt" in current directory by default.')
+                                            'it will look up "owner.txt" in current directory by default.')
         args = parser.parse_args()
         if args.owner is not None:
             self.ownertoken = args.owner
         if args.json is not None:
-            self.jsondir = args.json+"/"
+            self.jsondir = args.json + "/"
         self.get_users()
         if args.action == 'deploy':
             self.get_tools_config()
@@ -321,10 +322,13 @@ class BIEXCEL:
                 print("-  " + statusspl[0] + "   -    " + statusspl[1] + "  -")
                 print("-                     -               -")
             print("---------------------------------------")
+
+
 def run():
-  """Run bioexcel cli"""
-  bioexcel = BIEXCEL()
-  sys.exit(bioexcel.main(sys.argv))
+    """Run bioexcel cli"""
+    bioexcel = BIEXCEL()
+    sys.exit(bioexcel.main(sys.argv))
+
 
 if __name__ == "__main__":
     bioexcel = BIEXCEL()

@@ -1,7 +1,85 @@
- {
-			"user-sessions":1,
-			"users": [{
-			 "username":"bioexcel",
-			 "password":"PASSWORD"
-			}]
-		 }
+{
+  "user-sessions": 1,
+  "users": [
+    {
+      "username": "testECP1",
+      "password": "password"
+    },
+    {
+      "username": "testECP2",
+      "password": "password"
+    },
+    {
+      "username": "testECP3",
+      "password": "password"
+    },
+    {
+      "username": "testECP4",
+      "password": "password"
+    },
+    {
+      "username": "testECP5",
+      "password": "password"
+    },
+    {
+      "username": "testECP6",
+      "password": "password"
+    },
+    {
+      "username": "testECP7",
+      "password": "password"
+    },
+    {
+      "username": "testECP8",
+      "password": "password"
+    },
+    {
+      "username": "testECP9",
+      "password": "password"
+    },
+    {
+      "username": "testECP10",
+      "password": "password"
+    },
+    {
+      "username": "testECP11",
+      "password": "password"
+    },
+    {
+      "username": "testECP12",
+      "password": "password"
+    },
+    {
+      "username": "testECP13",
+      "password": "password"
+    },
+    {
+      "username": "testECP14",
+      "password": "password"
+    },
+    {
+      "username": "testECP15",
+      "password": "password"
+    },
+    {
+      "username": "testECP16",
+      "password": "password"
+    },
+    {
+      "username": "testECP17",
+      "password": "password"
+    },
+    {
+      "username": "testECP18",
+      "password": "password"
+    },
+    {
+      "username": "testECP19",
+      "password": "password"
+    },
+    {
+      "username": "testECP20",
+      "password": "password"
+    }
+  ]
+}
