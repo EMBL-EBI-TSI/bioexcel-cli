@@ -1,3 +1,10 @@
+> **Note**
+> The EBI Cloud Portal has been retired and its code base is no longer updated. This includes all tooling for the VM-related features of the BioExcel Portal.
+
+> If you would like to contact the Cloud Portal authors, please leave us feedback via [the EBI contact form](https://www.ebi.ac.uk/about/contact/support/other) mentioning the EBI Cloud Portal in the Subject.
+
+> As of March 2023 the BioExcel project itself is ongoing and you can find more information [here](https://bioexcel.eu/)
+
 # Bioexcel portal client - e2e testing tool
 Bioexcel portal client is a command line tool for end to end testing of Bioexcel portal. 
 The objective is to test performance of Bioexcel portal backend which is actually EBI cloud portal API server.
